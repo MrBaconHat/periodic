@@ -41,6 +41,8 @@ class Loop:
                 await self.after_func()
 
 
+    # === CONTROL =====================
+    
     def start(self, *args, **kwargs):
         if self.running:
             return
@@ -71,6 +73,20 @@ class Loop:
             *args,
             **kwargs
         )
+
+    # === PROPERTIES ==================
+    
+    def is_running(self) -> bool:
+        return self.runninh
+
+    def get_task(self) -> asyncio.Task:
+        return self.task
+
+    def get_interval(self) -> float:
+        return self.interval
+
+    def set_interval(self, interval: float):
+        self.interval = interval
 
 
     # === DECORATORS =================
