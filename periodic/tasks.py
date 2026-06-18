@@ -1,4 +1,5 @@
 import asyncio
+import functools
 
 
 class Loop:
@@ -12,6 +13,20 @@ class Loop:
 
         self.task = None
         self.running = False
+
+    def __get__(self, obj, objtype=None):
+        if obj is None:
+            return self
+        # Cache a bound Loop per instance so .start()/.stop() state is per-instance
+        key = f"_loop_{self.func.__name__}"
+        bound = obj.__dict__.get(key)
+        if bound is None:
+            bound = Loop(functools.partial(self.func, obj), self.interval)
+            bound.before_func = functools.partial(self.before_func, obj) if self.before_func else None
+            bound.after_func  = functools.partial(self.after_func,  obj) if self.after_func  else None
+            bound.error_func  = functools.partial(self.error_func,  obj) if self.error_func  else None
+            obj.__dict__[key] = bound
+        return bound
 
 
     async def _runner(self, *args, **kwargs):
